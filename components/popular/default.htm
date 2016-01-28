@@ -1,0 +1,12 @@
+{% set posts = __SELF__.posts %}
+
+<ul>
+    {% for post in posts %}
+    <li>
+        <div>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            <div class="meta"><span class="date">{{ post.published_at|date('M d, Y') }}</span> </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
