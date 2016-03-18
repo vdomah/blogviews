@@ -30,7 +30,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Blog Views',
-            'description' => 'The plugin counts post views, displays them and adds popular posts widget.',
+            'description' => 'The plugin enables blog posts views tracking and displaying popular articles.',
             'author'      => 'Art Gek',
             'icon'        => 'icon-signal'
         ];
@@ -44,17 +44,16 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'Vdomah\BlogViews\Components\Views' => 'Views',
+            'Vdomah\BlogViews\Components\Views' => 'views',
             'Vdomah\BlogViews\Components\Popular' => 'popularPosts',
         ];
     }
 
     public function boot()
     {
-        if ($this->app->runningInBackend())
-            return;
-
         PostComponent::extend(function($component) {
+            if ($this->app->runningInBackend())
+                return;
 
             if (!Session::has('postsviewed')) {
                 Session::put('postsviewed', []);
@@ -63,24 +62,35 @@ class Plugin extends PluginBase
             $post = PostModel::where('slug', $component->getController()->getRouter()->getParameters()['slug'])->first();
 
             if (!is_null($post) && !in_array($post->getKey(), Session::get('postsviewed'))) {
-                $obj = Db::table($this->table_views)
-                    ->where('post_id', $post->getKey());
-
-                if ($obj->count() > 0) {
-                    $row = $obj->first();
-                    $obj->update(['views' => ++$row->views]);
-                } else {
-                    Db::table($this->table_views)->insert([
-                        'post_id' => $post->getKey(),
-                        'views' => 1,
-                    ]);
-                }
+                $this->setViews($post);
 
                 Session::push('postsviewed', $post->getKey());
             }
 
             return true;
         });
+    }
+
+    public function setViews($post, $views = null)
+    {
+        $obj = Db::table($this->table_views)
+            ->where('post_id', $post->getKey());
+
+        if ($obj->count() > 0) {
+            $row = $obj->first();
+            if (!$views) {
+                $views = ++$row->views;
+            }
+            $obj->update(['views' => $views]);
+        } else {
+            if (!$views) {
+                $views = 1;
+            }
+            Db::table($this->table_views)->insert([
+                'post_id' => $post->getKey(),
+                'views' => $views,
+            ]);
+        }
     }
 
 }

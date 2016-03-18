@@ -2,6 +2,7 @@
 
 use Cms\Classes\ComponentBase;
 use Rainlab\Blog\Models\Post as BlogPost;
+use Cms\Classes\Page;
 
 class Popular extends ComponentBase
 {
@@ -9,6 +10,18 @@ class Popular extends ComponentBase
      * @var Rainlab\Blog\Models\Post The post model used for display.
      */
     public $posts;
+
+    /**
+     * Message to display when there are no messages.
+     * @var string
+     */
+    public $noPostsMessage;
+
+    /**
+     * Reference to the page name for linking to posts.
+     * @var string
+     */
+    public $postPage;
 
     public function componentDetails()
     {
@@ -28,11 +41,27 @@ class Popular extends ComponentBase
                 'validationMessage' => 'vdomah.blogviews::lang.settings.posts_limit_validation',
                 'default'           => '3',
             ],
+            'noPostsMessage' => [
+                'title'        => 'vdomah.blogviews::lang.settings.posts_no_posts',
+                'description'  => 'vdomah.blogviews::lang.settings.posts_no_posts_description',
+                'type'         => 'string',
+                'default'      => 'No posts found',
+                'showExternalParam' => false
+            ],
+            'postPage' => [
+                'title'       => 'vdomah.blogviews::lang.settings.posts_post',
+                'description' => 'vdomah.blogviews::lang.settings.posts_post_description',
+                'type'        => 'dropdown',
+                'default'     => 'blog/post',
+                'group'       => 'Links',
+            ],
         ];
     }
 
     public function onRun()
     {
+        $this->prepareVars();
+
         $this->posts = $this->page['posts'] = $this->listPosts();
     }
 
@@ -46,7 +75,26 @@ class Popular extends ComponentBase
             ->get()
         ;
 
+        $posts->each(function($post) {
+            $post->setUrl($this->postPage, $this->controller);
+        });
+
         return $posts;
+    }
+
+    protected function prepareVars()
+    {
+        $this->noPostsMessage = $this->page['noPostsMessage'] = $this->property('noPostsMessage');
+
+        /*
+         * Page links
+         */
+        $this->postPage = $this->page['postPage'] = $this->property('postPage');
+    }
+
+    public function getPostPageOptions()
+    {
+        return Page::sortBy('baseFileName')->lists('baseFileName', 'baseFileName');
     }
 
 }
