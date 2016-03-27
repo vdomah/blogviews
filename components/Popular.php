@@ -12,7 +12,7 @@ class Popular extends ComponentBase
     public $posts;
 
     /**
-     * Message to display when there are no messages.
+     * Message to display when there are no posts.
      * @var string
      */
     public $noPostsMessage;
@@ -22,6 +22,12 @@ class Popular extends ComponentBase
      * @var string
      */
     public $postPage;
+
+    /**
+     * The max number of posts to show.
+     * @var string
+     */
+    public $postsLimit;
 
     public function componentDetails()
     {
@@ -72,6 +78,7 @@ class Popular extends ComponentBase
          */
         $posts = BlogPost::leftJoin('vdomah_blogviews_views as pv', 'pv.post_id', '=', 'rainlab_blog_posts.id')
             ->orderBy('views', 'DESC')
+            ->limit($this->postsLimit)
             ->get()
         ;
 
@@ -84,6 +91,7 @@ class Popular extends ComponentBase
 
     protected function prepareVars()
     {
+        $this->postsLimit = $this->page['postsLimit'] = $this->property('postsLimit');
         $this->noPostsMessage = $this->page['noPostsMessage'] = $this->property('noPostsMessage');
 
         /*

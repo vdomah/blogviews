@@ -5,3 +5,8 @@ This plugin is an extension to the [RainLab.Blog](https://github.com/rainlab/blo
 The `popularPosts` component can be used to display top viewed posts.
 
 - **postsLimit** - The max number of posts to show.
+- **postPage** - Reference to the page name for linking to posts.
+- **noPostsMessage** - Message to display when there are no posts.
+
+#### Views (counter)
+The `Views` component can be used to display post views number.
