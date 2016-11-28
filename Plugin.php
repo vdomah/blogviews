@@ -69,6 +69,19 @@ class Plugin extends PluginBase
 
             return true;
         });
+
+        PostModel::extend(function($model) {
+            $model->addDynamicMethod('getViewsAttribute', function() use ($model) {
+                $obj = Db::table('vdomah_blogviews_views')
+                    ->where('post_id', $model->getKey());
+
+                if ($obj->count() > 0) {
+                    $out = $obj->first()->views;
+                }
+
+                return $out;
+            });
+        });
     }
 
     public function setViews($post, $views = null)
