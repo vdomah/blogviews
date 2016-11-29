@@ -32,8 +32,8 @@ class Popular extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'Popular Posts',
-            'description' => 'Most viewed posts list'
+            'name'        => 'vdomah.blogviews::lang.component.popular_name',
+            'description' => 'vdomah.blogviews::lang.component.popular_description'
         ];
     }
 
@@ -60,7 +60,7 @@ class Popular extends ComponentBase
                 'type'        => 'dropdown',
                 'default'     => 'blog/post',
                 'group'       => 'Links',
-            ],
+            ]
         ];
     }
 
@@ -104,5 +104,4 @@ class Popular extends ComponentBase
     {
         return Page::sortBy('baseFileName')->lists('baseFileName', 'baseFileName');
     }
-
 }
