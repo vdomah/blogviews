@@ -1,0 +1,7 @@
+1.0.0:
+    - First version of BlogViews
+    - create_post_views_table.php
+1.0.1:
+    - Limit and link params fixed
+1.0.2:
+    - Added 'views' dynamic property to Post model
