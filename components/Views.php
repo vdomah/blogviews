@@ -14,8 +14,8 @@ class Views extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'Post Views',
-            'description' => 'Show post views'
+            'name'        => 'vdomah.blogviews::lang.component.views_name',
+            'description' => 'vdomah.blogviews::lang.component.views_description'
         ];
     }
 
@@ -27,7 +27,7 @@ class Views extends ComponentBase
                 'description' => 'rainlab.blog::lang.settings.post_slug_description',
                 'default'     => '{{ :slug }}',
                 'type'        => 'string'
-            ],
+            ]
         ];
     }
 
@@ -58,5 +58,4 @@ class Views extends ComponentBase
 
         return $out;
     }
-
 }

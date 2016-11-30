@@ -5,7 +5,6 @@ use October\Rain\Database\Updates\Migration;
 
 class CreatePostViewsTable extends Migration
 {
-
     public function up()
     {
         Schema::create('vdomah_blogviews_views', function($table)
@@ -21,5 +20,4 @@ class CreatePostViewsTable extends Migration
     {
         Schema::dropIfExists('vdomah_blogviews_views');
     }
-
 }

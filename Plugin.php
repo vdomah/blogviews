@@ -29,10 +29,11 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'Blog Views',
-            'description' => 'The plugin enables blog posts views tracking and displaying popular articles.',
+            'name'        => 'vdomah.blogviews::lang.plugin.name',
+            'description' => 'vdomah.blogviews::lang.plugin.description',
             'author'      => 'Art Gek',
-            'icon'        => 'icon-signal'
+            'icon'        => 'icon-signal',
+            'homepage'    => 'https://github.com/vdomah/blogviews'
         ];
     }
 
@@ -44,16 +45,17 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'Vdomah\BlogViews\Components\Views' => 'views',
-            'Vdomah\BlogViews\Components\Popular' => 'popularPosts',
+            'Vdomah\BlogViews\Components\Views'   => 'views',
+            'Vdomah\BlogViews\Components\Popular' => 'popularPosts'
         ];
     }
 
     public function boot()
     {
         PostComponent::extend(function($component) {
-            if ($this->app->runningInBackend())
+            if ($this->app->runningInBackend()) {
                 return;
+            }
 
             if (!Session::has('postsviewed')) {
                 Session::put('postsviewed', []);
@@ -101,9 +103,8 @@ class Plugin extends PluginBase
             }
             Db::table($this->table_views)->insert([
                 'post_id' => $post->getKey(),
-                'views' => $views,
+                'views'   => $views
             ]);
         }
     }
-
 }
