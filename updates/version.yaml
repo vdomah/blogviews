@@ -5,3 +5,5 @@
     - Limit and link params fixed
 1.0.2:
     - Added 'views' dynamic property to Post model
+1.0.3:
+    - Improve the translation. Add MIT license. Pull request by gergo85
