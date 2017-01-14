@@ -7,3 +7,5 @@
     - Added 'views' dynamic property to Post model
 1.0.3:
     - Improve the translation. Add MIT license. Pull request by gergo85
+1.0.4:
+    - Default value to 0 in getViewsAttribute (thanks to hambern)
