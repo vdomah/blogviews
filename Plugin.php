@@ -77,6 +77,7 @@ class Plugin extends PluginBase
                 $obj = Db::table('vdomah_blogviews_views')
                     ->where('post_id', $model->getKey());
 
+                $out = 0;
                 if ($obj->count() > 0) {
                     $out = $obj->first()->views;
                 }
