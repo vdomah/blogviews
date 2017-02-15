@@ -56,12 +56,30 @@ class Plugin extends PluginBase
             if ($this->app->runningInBackend()) {
                 return;
             }
+            // getting slug value using logic from Cms\Classes\Controller setComponentPropertiesFromParams
+            $routerParameters = $component->getController()->getRouter()->getParameters();
+            $slugValue = $component->property('slug');
+
+            if (preg_match('/^\{\{([^\}]+)\}\}$/', $slugValue, $matches)) {
+                $paramName = trim($matches[1]);
+
+                if (substr($paramName, 0, 1) == ':') {
+                    $routeParamName = substr($paramName, 1);
+                    $urlSlugValue = array_key_exists($routeParamName, $routerParameters)
+                        ? $routerParameters[$routeParamName]
+                        : null;
+
+                }
+            }
+
+            if (!$urlSlugValue)
+                return;
 
             if (!Session::has('postsviewed')) {
                 Session::put('postsviewed', []);
             }
 
-            $post = PostModel::where('slug', $component->getController()->getRouter()->getParameters()['slug'])->first();
+            $post = PostModel::where('slug', $urlSlugValue)->first();
 
             if (!is_null($post) && !in_array($post->getKey(), Session::get('postsviewed'))) {
                 $this->setViews($post);
