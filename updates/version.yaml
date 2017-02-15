@@ -9,3 +9,5 @@
     - Improve the translation. Add MIT license. Pull request by gergo85
 1.0.4:
     - Default value to 0 in getViewsAttribute (thanks to hambern)
+1.0.5:
+    - Add support for whatever slug url name parameter like {{ :slug_some_custom_url_parameter }}
