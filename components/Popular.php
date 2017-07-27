@@ -2,6 +2,7 @@
 
 use Cms\Classes\ComponentBase;
 use Rainlab\Blog\Models\Post as BlogPost;
+use Rainlab\Blog\Models\Category as BlogCategory;
 use Cms\Classes\Page;
 
 class Popular extends ComponentBase
@@ -40,6 +41,11 @@ class Popular extends ComponentBase
     public function defineProperties()
     {
         return [
+            'category' => [
+                'title' => 'vdomah.blogviews::lang.settings.category',
+                'type' => 'dropdown',
+                'default' => null,
+            ],
             'postsLimit' => [
                 'title'             => 'vdomah.blogviews::lang.settings.posts_limit',
                 'type'              => 'string',
@@ -60,8 +66,19 @@ class Popular extends ComponentBase
                 'type'        => 'dropdown',
                 'default'     => 'blog/post',
                 'group'       => 'Links',
-            ]
+            ],
         ];
+    }
+
+    public function getCategoryOptions()
+    {
+        return array_merge(
+            [
+                null => e(trans('vdomah.blogviews::lang.settings.all_option')),
+                0 => e(trans('vdomah.blogviews::lang.settings.no_option'))
+            ],
+            BlogCategory::lists('name', 'id')
+        );
     }
 
     public function onRun()
@@ -76,11 +93,22 @@ class Popular extends ComponentBase
         /*
          * List all the posts
          */
-        $posts = BlogPost::leftJoin('vdomah_blogviews_views as pv', 'pv.post_id', '=', 'rainlab_blog_posts.id')
-            ->orderBy('views', 'DESC')
+        $query = BlogPost::leftJoin('vdomah_blogviews_views as pv', 'pv.post_id', '=', 'rainlab_blog_posts.id');
+
+        if ($this->property('category') !== null) {
+            if ($this->property('category') == 0)
+                $query = $query->has('categories', '=', 0);
+            elseif ($this->property('category') > 0)
+                $query->whereHas('categories', function($q) {
+                    $q->where('id', $this->property('category'));
+                });
+        }
+
+        $query = $query->orderBy('views', 'DESC')
             ->limit($this->postsLimit)
-            ->get()
         ;
+
+        $posts = $query->get();
 
         $posts->each(function($post) {
             $post->setUrl($this->postPage, $this->controller);

@@ -6,6 +6,9 @@ return [
         'description' => 'The plugin enables blog posts views tracking and displaying popular articles.'
     ],
     'settings' => [
+        'category' => 'Category',
+        'all_option' => '- All categories -',
+        'no_option' => '- With no category -',
         'posts_limit' => 'Limit',
         'posts_limit_validation' => 'Invalid format of the limit value',
         'posts_no_posts' => 'No posts message',
