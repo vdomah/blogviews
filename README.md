@@ -12,4 +12,4 @@ The `popularPosts` component can be used to display top viewed posts.
 - **noPostsMessage** - Message to display when there are no posts.
 
 #### Views (counter)
-The `Views` component can be used to display post views number.
+The `Views` component can be used to display post views number. In most cases use just {{ post.views }} without this component.
