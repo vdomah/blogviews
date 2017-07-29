@@ -44,7 +44,7 @@ class Popular extends ComponentBase
             'category' => [
                 'title' => 'vdomah.blogviews::lang.settings.category',
                 'type' => 'dropdown',
-                'default' => null,
+                'default' => '{{ :category }}',
             ],
             'postsLimit' => [
                 'title'             => 'vdomah.blogviews::lang.settings.posts_limit',
@@ -77,7 +77,7 @@ class Popular extends ComponentBase
                 null => e(trans('vdomah.blogviews::lang.settings.all_option')),
                 0 => e(trans('vdomah.blogviews::lang.settings.no_option'))
             ],
-            BlogCategory::lists('name', 'id')
+            BlogCategory::lists('name', 'slug')
         );
     }
 
@@ -93,14 +93,20 @@ class Popular extends ComponentBase
         /*
          * List all the posts
          */
-        $query = BlogPost::leftJoin('vdomah_blogviews_views as pv', 'pv.post_id', '=', 'rainlab_blog_posts.id');
+        $query = BlogPost::isPublished()
+            ->leftJoin('vdomah_blogviews_views as pv', 'pv.post_id', '=', 'rainlab_blog_posts.id')
+        ;
 
-        if ($this->property('category') !== null) {
-            if ($this->property('category') == 0)
+        $category_slug = $this->property('category');
+        if ((is_string($category_slug) && strlen($category_slug) == 0) || $category_slug === false)
+            $category_slug = null;
+
+        if ($category_slug !== null) {
+            if ($category_slug == 0)
                 $query = $query->has('categories', '=', 0);
-            elseif ($this->property('category') > 0)
-                $query->whereHas('categories', function($q) {
-                    $q->where('id', $this->property('category'));
+            elseif ($category_slug > 0)
+                $query->whereHas('categories', function($q) use ($category_slug) {
+                    $q->where('slug', $category_slug);
                 });
         }
 
