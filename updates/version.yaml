@@ -16,4 +16,4 @@
 1.0.7:
     - Dynamic category slug url parameter. Only published posts in Popular component
 1.0.8:
-    - "Fixed error using blogviews with sitemap: check if Controller instancieated before extend"
+    - "Fixed error using blogviews with sitemap: check if Controller instantiated before extend"
