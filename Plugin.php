@@ -5,6 +5,7 @@ use Session;
 use System\Classes\PluginBase;
 use Rainlab\Blog\Components\Post as PostComponent;
 use Rainlab\Blog\Models\Post as PostModel;
+use Cms\Classes\Controller;
 
 /**
  * BlogViews Plugin Information File
@@ -52,13 +53,15 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        PostComponent::extend(function($component) {
-            if ($this->app->runningInBackend()) {
+        PostComponent::extend(function($component) {//dd($this->app->runningInBackend());
+            if ($this->app->runningInBackend() || !Controller::getController()) {
                 return;
             }
+
             // getting slug value using logic from Cms\Classes\Controller setComponentPropertiesFromParams
-            $routerParameters = $component->getController()->getRouter()->getParameters();
             $slugValue = $component->property('slug');
+            $routerParameters = $component->getRouter()->getParameters();
+
             $slugValueFromUrl = null;
 
             if (preg_match('/^\{\{([^\}]+)\}\}$/', $slugValue, $matches)) {
