@@ -15,3 +15,5 @@
     - Ability to choose blog category for Popular posts
 1.0.7:
     - Dynamic category slug url parameter. Only published posts in Popular component
+1.0.8:
+    - "Fixed error using blogviews with sitemap: check if Controller instancieated before extend"
