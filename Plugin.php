@@ -1,7 +1,7 @@
 <?php namespace Vdomah\BlogViews;
 
 use Db;
-use Session;
+use Cookie;
 use System\Classes\PluginBase;
 use Rainlab\Blog\Components\Post as PostComponent;
 use Rainlab\Blog\Models\Post as PostModel;
@@ -12,6 +12,8 @@ use Cms\Classes\Controller;
  */
 class Plugin extends PluginBase
 {
+    const POST_VIEWED = 'vdomah-blog-post-viewed-';
+
     /**
      * @var array   Require the RainLab.Blog plugin
      */
@@ -53,14 +55,14 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        PostComponent::extend(function($component) {//dd($this->app->runningInBackend());
+        PostComponent::extend(function($component) {
             if ($this->app->runningInBackend() || !Controller::getController()) {
                 return;
             }
 
             // getting slug value using logic from Cms\Classes\Controller setComponentPropertiesFromParams
             $slugValue = $component->property('slug');
-            $routerParameters = $component->getRouter()->getParameters();
+            $routerParameters = Controller::getController()->getRouter()->getParameters();
 
             $slugValueFromUrl = null;
 
@@ -79,16 +81,13 @@ class Plugin extends PluginBase
             if (!$slugValueFromUrl)
                 return;
 
-            if (!Session::has('postsviewed')) {
-                Session::put('postsviewed', []);
-            }
-
             $post = PostModel::where('slug', $slugValueFromUrl)->first();
+            $cookName = self::POST_VIEWED . $post->getKey();
 
-            if (!is_null($post) && !in_array($post->getKey(), Session::get('postsviewed'))) {
+            if (!is_null($post) && Cookie::get( $cookName, 0 ) == 0) {
                 $this->setViews($post);
 
-                Session::push('postsviewed', $post->getKey());
+                Cookie::queue( $cookName, '1', 525000 );
             }
 
             return true;
