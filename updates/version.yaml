@@ -24,4 +24,4 @@
 1.0.11:
     - Don't count web crawler bots visits.
 1.0.12
-    - blogviews.before.track event added with trackPrevent and trackBot options.
+    - "blogviews.before.track event added with trackPrevent and trackBot options."
