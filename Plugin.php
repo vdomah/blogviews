@@ -3,7 +3,6 @@
 use Db;
 use Cookie;
 use Event;
-use Lovata\GoodNews\Components\ArticlePage;
 use System\Classes\PluginBase;
 use Rainlab\Blog\Components\Post as PostComponent;
 use Rainlab\Blog\Models\Post as PostModel;
@@ -18,6 +17,9 @@ use Vdomah\BlogViews\Components\Views;
 class Plugin extends PluginBase
 {
     const POST_VIEWED = 'vdomah-blog-post-viewed-';
+    const EVENT_BEFORE_TRACK = 'blogviews.before.track';
+    const PARAM_TRACK_PREVENT = 'trackPrevent';
+    const PARAM_TRACK_BOT = 'trackBot';
 
     /**
      * @var array   Require the RainLab.Blog plugin
@@ -60,12 +62,21 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        ArticlePage::extend(function($component) {
+        PostComponent::extend(function($component) {
             if ($this->app->runningInBackend() || !Controller::getController()) {
                 return;
             }
 
-            if ($this->isBot()) {
+            $result = Event::fire(self::EVENT_BEFORE_TRACK, [$this, $component]);
+
+            $preventTrack = isset($result[0][self::PARAM_TRACK_PREVENT]) && $result[0][self::PARAM_TRACK_PREVENT];
+
+            if ($preventTrack)
+                return;
+
+            $trackBot = isset($result[0][self::PARAM_TRACK_BOT]) && $result[0][self::PARAM_TRACK_BOT];
+
+            if ($this->isBot() && !$trackBot) {
                 // do not do anything if a bot is detected
                 return;
             }
@@ -73,13 +84,7 @@ class Plugin extends PluginBase
             $post = $this->getPost($component);
 
             if (!is_null($post)) {
-                $cookName = self::POST_VIEWED . $post->getKey();
-
-                if (Cookie::get( $cookName, 0 ) == 0) {
-                    $this->setViews($post);
-
-                    Cookie::queue( $cookName, '1', 525000 );
-                }
+                $this->track($post);
             }
 
             return true;
@@ -161,5 +166,16 @@ class Plugin extends PluginBase
         $post = PostModel::whereSlug($slugValueFromUrl)->first();
 
         return $post;
+    }
+
+    private function track($post)
+    {
+        $cookName = self::POST_VIEWED . $post->getKey();
+
+        if (Cookie::get( $cookName, 0 ) == 0) {
+            $this->setViews($post);
+
+            Cookie::queue( $cookName, '1', 525000 );
+        }
     }
 }
