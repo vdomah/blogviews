@@ -2,10 +2,15 @@
 
 use Db;
 use Cookie;
+use Event;
+use Lovata\GoodNews\Components\ArticlePage;
 use System\Classes\PluginBase;
 use Rainlab\Blog\Components\Post as PostComponent;
 use Rainlab\Blog\Models\Post as PostModel;
 use Cms\Classes\Controller;
+use DeviceDetector\Parser\Bot as BotParser;
+use Vdomah\BlogViews\Components\Popular;
+use Vdomah\BlogViews\Components\Views;
 
 /**
  * BlogViews Plugin Information File
@@ -48,40 +53,24 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'Vdomah\BlogViews\Components\Views'   => 'views',
-            'Vdomah\BlogViews\Components\Popular' => 'popularPosts'
+            Views::class   => 'views',
+            Popular::class => 'popularPosts'
         ];
     }
 
     public function boot()
     {
-        PostComponent::extend(function($component) {
+        ArticlePage::extend(function($component) {
             if ($this->app->runningInBackend() || !Controller::getController()) {
                 return;
             }
 
-            // getting slug value using logic from Cms\Classes\Controller setComponentPropertiesFromParams
-            $slugValue = $component->property('slug');
-            $routerParameters = Controller::getController()->getRouter()->getParameters();
-
-            $slugValueFromUrl = null;
-
-            if (preg_match('/^\{\{([^\}]+)\}\}$/', $slugValue, $matches)) {
-                $paramName = trim($matches[1]);
-
-                if (substr($paramName, 0, 1) == ':') {
-                    $routeParamName = substr($paramName, 1);
-                    $slugValueFromUrl = array_key_exists($routeParamName, $routerParameters)
-                        ? $routerParameters[$routeParamName]
-                        : null;
-
-                }
+            if ($this->isBot()) {
+                // do not do anything if a bot is detected
+                return;
             }
 
-            if (!$slugValueFromUrl)
-                return;
-
-            $post = PostModel::whereSlug($slugValueFromUrl)->first();
+            $post = $this->getPost($component);
 
             if (!is_null($post)) {
                 $cookName = self::POST_VIEWED . $post->getKey();
@@ -111,7 +100,7 @@ class Plugin extends PluginBase
         });
     }
 
-    public function setViews($post, $views = null)
+    private function setViews($post, $views = null)
     {
         $obj = Db::table($this->table_views)
             ->where('post_id', $post->getKey());
@@ -131,5 +120,46 @@ class Plugin extends PluginBase
                 'views'   => $views
             ]);
         }
+    }
+
+    private function isBot()
+    {
+        $botParser = new BotParser();
+        $botParser->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+        $botParser->discardDetails();
+
+        return $botParser->parse();
+    }
+
+    /*
+     * Getting slug value using logic from Cms\Classes\Controller setComponentPropertiesFromParams
+     *
+     * @return PostModel
+     */
+    private function getPost($component)
+    {
+        $slugValue = $component->property('slug');
+        $routerParameters = Controller::getController()->getRouter()->getParameters();
+
+        $slugValueFromUrl = null;
+
+        if (preg_match('/^\{\{([^\}]+)\}\}$/', $slugValue, $matches)) {
+            $paramName = trim($matches[1]);
+
+            if (substr($paramName, 0, 1) == ':') {
+                $routeParamName = substr($paramName, 1);
+                $slugValueFromUrl = array_key_exists($routeParamName, $routerParameters)
+                    ? $routerParameters[$routeParamName]
+                    : null;
+
+            }
+        }
+
+        if (!$slugValueFromUrl)
+            return null;
+
+        $post = PostModel::whereSlug($slugValueFromUrl)->first();
+
+        return $post;
     }
 }
