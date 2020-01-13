@@ -19,3 +19,5 @@
     - "Fixed error using blogviews with sitemap: check if Controller instantiated before extend"
 1.0.9:
     - "Get url parameters directly from Controller instance without component. Using Cookie instead of Session"
+1.0.10:
+    - "Fix bug when post is not found."

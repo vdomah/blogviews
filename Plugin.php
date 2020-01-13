@@ -81,13 +81,16 @@ class Plugin extends PluginBase
             if (!$slugValueFromUrl)
                 return;
 
-            $post = PostModel::where('slug', $slugValueFromUrl)->first();
-            $cookName = self::POST_VIEWED . $post->getKey();
+            $post = PostModel::whereSlug($slugValueFromUrl)->first();
 
-            if (!is_null($post) && Cookie::get( $cookName, 0 ) == 0) {
-                $this->setViews($post);
+            if (!is_null($post)) {
+                $cookName = self::POST_VIEWED . $post->getKey();
 
-                Cookie::queue( $cookName, '1', 525000 );
+                if (Cookie::get( $cookName, 0 ) == 0) {
+                    $this->setViews($post);
+
+                    Cookie::queue( $cookName, '1', 525000 );
+                }
             }
 
             return true;
