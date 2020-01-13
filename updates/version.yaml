@@ -23,5 +23,5 @@
     - "Fix bug when post is not found."
 1.0.11:
     - Don't count web crawler bots visits.
-1.0.12
-    - "Event to filter what visits to track added with trackPrevent and trackBot options."
+1.0.12:
+    - "blogviews.before.track  added with trackPrevent and trackBot options."
