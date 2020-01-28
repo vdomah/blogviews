@@ -42,27 +42,27 @@ class Popular extends ComponentBase
     {
         return [
             'category' => [
-                'title' => 'vdomah.blogviews::lang.settings.category',
+                'title' => 'vdomah.blogviews::lang.properties.category',
                 'type' => 'dropdown',
                 'default' => '{{ :category }}',
             ],
             'postsLimit' => [
-                'title'             => 'vdomah.blogviews::lang.settings.posts_limit',
+                'title'             => 'vdomah.blogviews::lang.properties.posts_limit',
                 'type'              => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'vdomah.blogviews::lang.settings.posts_limit_validation',
+                'validationMessage' => 'vdomah.blogviews::lang.properties.posts_limit_validation',
                 'default'           => '3',
             ],
             'noPostsMessage' => [
-                'title'        => 'vdomah.blogviews::lang.settings.posts_no_posts',
-                'description'  => 'vdomah.blogviews::lang.settings.posts_no_posts_description',
+                'title'        => 'vdomah.blogviews::lang.properties.posts_no_posts',
+                'description'  => 'vdomah.blogviews::lang.properties.posts_no_posts_description',
                 'type'         => 'string',
                 'default'      => 'No posts found',
                 'showExternalParam' => false
             ],
             'postPage' => [
-                'title'       => 'vdomah.blogviews::lang.settings.posts_post',
-                'description' => 'vdomah.blogviews::lang.settings.posts_post_description',
+                'title'       => 'vdomah.blogviews::lang.properties.posts_post',
+                'description' => 'vdomah.blogviews::lang.properties.posts_post_description',
                 'type'        => 'dropdown',
                 'default'     => 'blog/post',
                 'group'       => 'Links',
@@ -74,8 +74,8 @@ class Popular extends ComponentBase
     {
         return array_merge(
             [
-                null => e(trans('vdomah.blogviews::lang.settings.all_option')),
-                0 => e(trans('vdomah.blogviews::lang.settings.no_option'))
+                null => e(trans('vdomah.blogviews::lang.properties.all_option')),
+                0 => e(trans('vdomah.blogviews::lang.properties.no_option'))
             ],
             BlogCategory::lists('name', 'slug')
         );

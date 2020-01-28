@@ -3,9 +3,10 @@
 return [
     'plugin' => [
         'name' => 'Blog Views',
-        'description' => 'The plugin enables blog posts views tracking and displaying popular articles.'
+        'description' => 'The plugin enables blog posts views tracking and displaying popular articles.',
+        'description_settings' => 'Blog Views tracking settings',
     ],
-    'settings' => [
+    'properties' => [
         'category' => 'Category',
         'all_option' => '- All categories -',
         'no_option' => '- With no category -',
@@ -24,5 +25,11 @@ return [
         'popular_description' => 'Most viewed posts list',
         'views_name' => 'Post Views',
         'views_description' => 'Show post views'
-    ]
+    ],
+    'settings' => [
+        'double_tracking_prevent_method' => 'Double tracking prevent method',
+        'double_tracking_prevent_method_comment' => 'What method to use to store user\'s id. For preventing tracking his visit multiple times',
+        'cookie' => 'Cookie',
+        'session' => 'Session',
+    ],
 ];

@@ -25,3 +25,5 @@
     - Don't count web crawler bots visits.
 1.0.12:
     - "blogviews.before.track  added with trackPrevent and trackBot options."
+1.0.13:
+    - "Both Cookie and Session methods available to prevent doubletracking"

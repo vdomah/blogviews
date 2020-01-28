@@ -3,6 +3,7 @@
 use Db;
 use Cookie;
 use Event;
+use Session;
 use System\Classes\PluginBase;
 use Rainlab\Blog\Components\Post as PostComponent;
 use Rainlab\Blog\Models\Post as PostModel;
@@ -10,13 +11,14 @@ use Cms\Classes\Controller;
 use DeviceDetector\Parser\Bot as BotParser;
 use Vdomah\BlogViews\Components\Popular;
 use Vdomah\BlogViews\Components\Views;
+use Vdomah\BlogViews\Models\Settings;
 
 /**
  * BlogViews Plugin Information File
  */
 class Plugin extends PluginBase
 {
-    const POST_VIEWED = 'vdomah-blog-post-viewed-';
+    const POST_VIEWED = 'vdomah-blog-post-viewed';
     const EVENT_BEFORE_TRACK = 'blogviews.before.track';
     const PARAM_TRACK_PREVENT = 'trackPrevent';
     const PARAM_TRACK_BOT = 'trackBot';
@@ -170,12 +172,51 @@ class Plugin extends PluginBase
 
     private function track($post)
     {
-        $cookName = self::POST_VIEWED . $post->getKey();
+        if (Settings::get('double_tracking_prevent_method', 'cookie') == 'session') {
+            $this->setViewsSession($post);
+        } else {
+            $this->setViewsCookie($post);
+        }
+    }
+
+    private function setViewsSession($post)
+    {
+        if (!Session::has(self::POST_VIEWED)) {
+            Session::put(self::POST_VIEWED, []);
+        }
+
+        if (!in_array($post->getKey(), Session::get(self::POST_VIEWED))) {
+            $this->setViews($post);
+
+            Session::push(self::POST_VIEWED, $post->getKey());
+        }
+    }
+
+    private function setViewsCookie($post)
+    {
+        $cookName = self::POST_VIEWED . '-' . $post->getKey();
 
         if (Cookie::get( $cookName, 0 ) == 0) {
             $this->setViews($post);
 
             Cookie::queue( $cookName, '1', 525000 );
         }
+    }
+
+    public function registerSettings()
+    {
+        return [
+            'config' => [
+                'label'       => 'vdomah.blogviews::lang.plugin.name',
+                'description' => 'vdomah.blogviews::lang.plugin.description_settings',
+                'category'    => 'rainlab.blog::lang.blog.menu_label',
+                'icon'        => 'icon-signal',
+                'class'       => Settings::class,
+                'order'       => 501,
+                'permissions' => [
+                    'blogviews-menu-settings',
+                ],
+            ],
+        ];
     }
 }

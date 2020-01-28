@@ -1,0 +1,10 @@
+fields:
+  double_tracking_prevent_method:
+    span: left
+    label: vdomah.blogviews::lang.settings.double_tracking_prevent_method
+    type: dropdown
+    default: cookie
+    comment: vdomah.blogviews::lang.settings.double_tracking_prevent_method_comment
+    options:
+        cookie: vdomah.blogviews::lang.settings.cookie
+        session: vdomah.blogviews::lang.settings.session

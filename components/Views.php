@@ -23,8 +23,8 @@ class Views extends ComponentBase
     {
         return [
             'slug' => [
-                'title'       => 'rainlab.blog::lang.settings.post_slug',
-                'description' => 'rainlab.blog::lang.settings.post_slug_description',
+                'title'       => 'rainlab.blog::lang.properties.post_slug',
+                'description' => 'rainlab.blog::lang.properties.post_slug_description',
                 'default'     => '{{ :slug }}',
                 'type'        => 'string'
             ]
