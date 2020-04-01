@@ -95,12 +95,9 @@ class Plugin extends PluginBase
         PostModel::extend(function($model) {
             $model->addDynamicMethod('getViewsAttribute', function() use ($model) {
                 $obj = Db::table('vdomah_blogviews_views')
-                    ->where('post_id', $model->getKey());
+                    ->where('post_id', $model->getKey())->first();
 
-                $out = 0;
-                if ($obj->count() > 0) {
-                    $out = $obj->first()->views;
-                }
+                $out = is_null($obj) ? 0 : $obj->views;
 
                 return $out;
             });
