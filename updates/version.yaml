@@ -27,3 +27,5 @@
     - "blogviews.before.track  added with trackPrevent and trackBot options."
 1.0.13:
     - "Both Cookie and Session methods available to prevent doubletracking"
+1.0.14:
+    - "Fix: bot detection if no HTTP_USER_AGENT is present in request"

@@ -131,11 +131,17 @@ class Plugin extends PluginBase
 
     private function isBot()
     {
-        $botParser = new BotParser();
-        $botParser->setUserAgent($_SERVER['HTTP_USER_AGENT']);
-        $botParser->discardDetails();
+        $is_bot = false;
 
-        return $botParser->parse();
+        if (isset($_SERVER['HTTP_USER_AGENT'])) {
+            $botParser = new BotParser();
+            $botParser->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+            $botParser->discardDetails();
+
+            $is_bot = $botParser->parse();
+        }
+
+        return $is_bot;
     }
 
     /*
